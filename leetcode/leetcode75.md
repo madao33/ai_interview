@@ -1458,53 +1458,7 @@ class Solution:
 
 # 前缀和
 
-[1732. 找到最高海拔](https://leetcode.cn/problems/find-the-highest-altitude/)
-
-简单
-
-
-
-相关标签
-
-相关企业
-
-
-
-提示
-
-
-
-有一个自行车手打算进行一场公路骑行，这条路线总共由 `n + 1` 个不同海拔的点组成。自行车手从海拔为 `0` 的点 `0` 开始骑行。
-
-给你一个长度为 `n` 的整数数组 `gain` ，其中 `gain[i]` 是点 `i` 和点 `i + 1` 的 **净海拔高度差**（`0 <= i < n`）。请你返回 **最高点的海拔** 。
-
- 
-
-**示例 1：**
-
-```
-输入：gain = [-5,1,5,0,-7]
-输出：1
-解释：海拔高度依次为 [0,-5,-4,1,1,-6] 。最高海拔为 1 。
-```
-
-**示例 2：**
-
-```
-输入：gain = [-4,-3,-2,-1,4,3,2]
-输出：0
-解释：海拔高度依次为 [0,-4,-7,-9,-10,-6,-3,-1] 。最高海拔为 0 。
-```
-
- 
-
-**提示：**
-
-- `n == gain.length`
-- `1 <= n <= 100`
-- `-100 <= gain[i] <= 100`
-
-[1732. 找到最高海拔](https://leetcode.cn/problems/find-the-highest-altitude/)
+## [1732. 找到最高海拔](https://leetcode.cn/problems/find-the-highest-altitude/)
 
 简单
 
@@ -1552,19 +1506,456 @@ class Solution:
 
 **题解**
 
+```python
+class Solution:
+    def largestAltitude(self, gain: List[int]) -> int:
+        ans, alti = 0, 0
+        for n in gain:
+            alti += n
+            ans = max(ans, alti)
+        return ans
 ```
 
+
+
+## [724. 寻找数组的中心下标](https://leetcode.cn/problems/find-pivot-index/)
+
+简单
+
+
+
+相关标签
+
+相关企业
+
+
+
+提示
+
+
+
+给你一个整数数组 `nums` ，请计算数组的 **中心下标** 。
+
+数组 **中心下标** 是数组的一个下标，其左侧所有元素相加的和等于右侧所有元素相加的和。
+
+如果中心下标位于数组最左端，那么左侧数之和视为 `0` ，因为在下标的左侧不存在元素。这一点对于中心下标位于数组最右端同样适用。
+
+如果数组有多个中心下标，应该返回 **最靠近左边** 的那一个。如果数组不存在中心下标，返回 `-1` 。
+
+ 
+
+**示例 1：**
+
+```
+输入：nums = [1, 7, 3, 6, 5, 6]
+输出：3
+解释：
+中心下标是 3 。
+左侧数之和 sum = nums[0] + nums[1] + nums[2] = 1 + 7 + 3 = 11 ，
+右侧数之和 sum = nums[4] + nums[5] = 5 + 6 = 11 ，二者相等。
 ```
 
+**示例 2：**
+
+```
+输入：nums = [1, 2, 3]
+输出：-1
+解释：
+数组中不存在满足此条件的中心下标。
+```
+
+**示例 3：**
+
+```
+输入：nums = [2, 1, -1]
+输出：0
+解释：
+中心下标是 0 。
+左侧数之和 sum = 0 ，（下标 0 左侧不存在元素），
+右侧数之和 sum = nums[1] + nums[2] = 1 + -1 = 0 。
+```
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 104`
+- `-1000 <= nums[i] <= 1000`
+
+ 
+
+**注意：**本题与主站 1991 题相同：https://leetcode-cn.com/problems/find-the-middle-index-in-array/
 
 
 
+**题解**
+
+```python
+class Solution:
+    def pivotIndex(self, nums: List[int]) -> int:
+        N = len(nums)
+        lsum, rsum = [0 for i in range(N+1)], [0 for i in range(N+1)]
+        for i in range(N):
+            lsum[i+1] += lsum[i] + nums[i]
+            rsum[N-i-1] = rsum[N-i] + nums[N-i-1]
+
+        for i in range(N):
+            if lsum[i] == rsum[i+1]:
+                return i
+        return -1
+```
+
+# 哈希表
+
+## [2215. 找出两数组的不同](https://leetcode.cn/problems/find-the-difference-of-two-arrays/)
+
+简单
 
 
 
+相关标签
+
+相关企业
 
 
 
+提示
 
 
+
+给你两个下标从 `0` 开始的整数数组 `nums1` 和 `nums2` ，请你返回一个长度为 `2` 的列表 `answer` ，其中：
+
+- `answer[0]` 是 `nums1` 中所有 **不** 存在于 `nums2` 中的 **不同** 整数组成的列表。
+- `answer[1]` 是 `nums2` 中所有 **不** 存在于 `nums1` 中的 **不同** 整数组成的列表。
+
+**注意：**列表中的整数可以按 **任意** 顺序返回。
+
+ 
+
+**示例 1：**
+
+```
+输入：nums1 = [1,2,3], nums2 = [2,4,6]
+输出：[[1,3],[4,6]]
+解释：
+对于 nums1 ，nums1[1] = 2 出现在 nums2 中下标 0 处，然而 nums1[0] = 1 和 nums1[2] = 3 没有出现在 nums2 中。因此，answer[0] = [1,3]。
+对于 nums2 ，nums2[0] = 2 出现在 nums1 中下标 1 处，然而 nums2[1] = 4 和 nums2[2] = 6 没有出现在 nums2 中。因此，answer[1] = [4,6]。
+```
+
+**示例 2：**
+
+```
+输入：nums1 = [1,2,3,3], nums2 = [1,1,2,2]
+输出：[[3],[]]
+解释：
+对于 nums1 ，nums1[2] 和 nums1[3] 没有出现在 nums2 中。由于 nums1[2] == nums1[3] ，二者的值只需要在 answer[0] 中出现一次，故 answer[0] = [3]。
+nums2 中的每个整数都在 nums1 中出现，因此，answer[1] = [] 。 
+```
+
+ 
+
+**提示：**
+
+- `1 <= nums1.length, nums2.length <= 1000`
+- `-1000 <= nums1[i], nums2[i] <= 1000`
+
+**题解**
+
+```python
+class Solution:
+    def findDifference(self, nums1: List[int], nums2: List[int]) -> List[List[int]]:
+        ans = [[], []]
+
+        set1, set2 = set(nums1), set(nums2)
+        for num in set2:
+            if num not in set1:
+                ans[1].append(num)
+
+        for num in set1:
+            if num not in set2:
+                ans[0].append(num)
+
+        return ans
+```
+
+[1207. 独一无二的出现次数](https://leetcode.cn/problems/unique-number-of-occurrences/)
+
+简单
+
+
+
+相关标签
+
+相关企业
+
+
+
+提示
+
+
+
+给你一个整数数组 `arr`，如果每个数的出现次数都是独一无二的，就返回 `true`；否则返回 `false`。
+
+ 
+
+**示例 1：**
+
+```
+输入：arr = [1,2,2,1,1,3]
+输出：true
+解释：在该数组中，1 出现了 3 次，2 出现了 2 次，3 只出现了 1 次。没有两个数的出现次数相同。
+```
+
+**示例 2：**
+
+```
+输入：arr = [1,2]
+输出：false
+```
+
+**示例 3：**
+
+```
+输入：arr = [-3,0,1,-3,1,1,1,-3,10,0]
+输出：true
+```
+
+ 
+
+**提示：**
+
+- `1 <= arr.length <= 1000`
+- `-1000 <= arr[i] <= 1000`
+
+## [1207. 独一无二的出现次数](https://leetcode.cn/problems/unique-number-of-occurrences/)
+
+简单
+
+
+
+相关标签
+
+相关企业
+
+
+
+提示
+
+
+
+给你一个整数数组 `arr`，如果每个数的出现次数都是独一无二的，就返回 `true`；否则返回 `false`。
+
+ 
+
+**示例 1：**
+
+```
+输入：arr = [1,2,2,1,1,3]
+输出：true
+解释：在该数组中，1 出现了 3 次，2 出现了 2 次，3 只出现了 1 次。没有两个数的出现次数相同。
+```
+
+**示例 2：**
+
+```
+输入：arr = [1,2]
+输出：false
+```
+
+**示例 3：**
+
+```
+输入：arr = [-3,0,1,-3,1,1,1,-3,10,0]
+输出：true
+```
+
+ 
+
+**提示：**
+
+- `1 <= arr.length <= 1000`
+- `-1000 <= arr[i] <= 1000`
+
+**题解**
+
+```python
+class Solution:
+    def uniqueOccurrences(self, arr: List[int]) -> bool:
+        cntMap = dict()
+        for a in arr:
+            if a in cntMap:
+                cntMap[a] += 1
+            else:
+                cntMap[a] = 1
+        
+        freqMap = set()
+        for _, v in cntMap.items():
+            if v in freqMap:
+                return False
+            else:
+                freqMap.add(v)
+        return True
+```
+
+## [1657. 确定两个字符串是否接近](https://leetcode.cn/problems/determine-if-two-strings-are-close/)
+
+中等
+
+
+
+相关标签
+
+相关企业
+
+
+
+提示
+
+
+
+如果可以使用以下操作从一个字符串得到另一个字符串，则认为两个字符串 **接近** ：
+
+- 操作 1：交换任意两个
+
+   
+
+  现有
+
+   
+
+  字符。
+
+  - 例如，`abcde -> aecdb`
+
+- 操作 2：将一个
+
+   
+
+  现有
+
+   
+
+  字符的每次出现转换为另一个
+
+   
+
+  现有
+
+   
+
+  字符，并对另一个字符执行相同的操作。
+
+  - 例如，`aacabb -> bbcbaa`（所有 `a` 转化为 `b` ，而所有的 `b` 转换为 `a` ）
+
+你可以根据需要对任意一个字符串多次使用这两种操作。
+
+给你两个字符串，`word1` 和 `word2` 。如果 `word1` 和 `word2` **接近** ，就返回 `true` ；否则，返回 `false` 。
+
+ 
+
+**示例 1：**
+
+```
+输入：word1 = "abc", word2 = "bca"
+输出：true
+解释：2 次操作从 word1 获得 word2 。
+执行操作 1："abc" -> "acb"
+执行操作 1："acb" -> "bca"
+```
+
+**示例 2：**
+
+```
+输入：word1 = "a", word2 = "aa"
+输出：false
+解释：不管执行多少次操作，都无法从 word1 得到 word2 ，反之亦然。
+```
+
+**示例 3：**
+
+```
+输入：word1 = "cabbba", word2 = "abbccc"
+输出：true
+解释：3 次操作从 word1 获得 word2 。
+执行操作 1："cabbba" -> "caabbb"
+执行操作 2："caabbb" -> "baaccc"
+执行操作 2："baaccc" -> "abbccc"
+```
+
+**提示：**
+
+- `1 <= word1.length, word2.length <= 105`
+- `word1` 和 `word2` 仅包含小写英文字母
+
+
+
+**题解**
+
+```python
+class Solution:
+    def closeStrings(self, word1: str, word2: str) -> bool:
+        return set(word1) == set(word2) and Counter(Counter(word1).values()) == Counter(Counter(word2).values())
+```
+
+## [2352. 相等行列对](https://leetcode.cn/problems/equal-row-and-column-pairs/)
+
+中等
+
+
+
+相关标签
+
+相关企业
+
+
+
+提示
+
+
+
+给你一个下标从 **0** 开始、大小为 `n x n` 的整数矩阵 `grid` ，返回满足 `Ri` 行和 `Cj` 列相等的行列对 `(Ri, Cj)` 的数目*。*
+
+如果行和列以相同的顺序包含相同的元素（即相等的数组），则认为二者是相等的。
+
+ 
+
+**示例 1：**
+
+![img](assets/ex1.jpg)
+
+```
+输入：grid = [[3,2,1],[1,7,6],[2,7,7]]
+输出：1
+解释：存在一对相等行列对：
+- (第 2 行，第 1 列)：[2,7,7]
+```
+
+**示例 2：**
+
+![img](assets/ex2.jpg)
+
+```
+输入：grid = [[3,1,2,2],[1,4,4,5],[2,4,2,2],[2,4,2,2]]
+输出：3
+解释：存在三对相等行列对：
+- (第 0 行，第 0 列)：[3,1,2,2]
+- (第 2 行, 第 2 列)：[2,4,2,2]
+- (第 3 行, 第 2 列)：[2,4,2,2]
+```
+
+ 
+
+**提示：**
+
+- `n == grid.length == grid[i].length`
+- `1 <= n <= 200`
+- `1 <= grid[i][j] <= 105`
+
+
+
+**题解**
+
+```python
+
+```
 
