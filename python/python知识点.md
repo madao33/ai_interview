@@ -94,7 +94,104 @@ if __name__ == '__main__':
     print("end test")
 ```
 
+### **管道Pipe**
+
+管道Pipe和Queue的作用大致差不多，也是实现进程间的通信
+
+```python
+from multiprocessing import Process, Pipe
+
+def fun(conn):
+    print('子进程发送消息')
+    conn.send('你好主进程')
+    print('子进程接受消息')
+    print(conn.recv())
+    conn.close()
 
 
+if __name__ == '__main__':
+    conn1, conn2 = Pipe()
+    p = Process(target=fun, args=(conn2,))
+    p.start()
+    print("主进程接受消息: ")
+    print(conn1.recv())
+    print("主进程发送消息：")
+    conn1.send("你好子进程")
+    p.join()
+    print("结束测试")
 
+```
+
+### **Managers**
+
+Queue和Pipe只是实现了数据交互，并没实现数据共享，即一个进程去更改另一个进程的数据。那么就要用到Managers
+
+```python
+from multiprocessing import Process, Manager
+
+def fun(dic, lis, index):
+    dic[index] = 'a'
+    dic['2'] = 'b'
+    lis.append(index)
+
+
+if __name__ == '__main__':
+    with Manager() as manager:
+        dic = manager.dict()
+        l = manager.list(range(5))
+
+        process_list = [] 
+        for i in range(10):
+            p = Process(target=fun, args=(dic, l, i))
+            p.start()
+            process_list.append(p)
+
+        for res in process_list:
+            res.join()
+        print(dic)
+        print(l)
+```
+
+结果
+
+```shell
+{3: 'a', '2': 'b', 0: 'a', 2: 'a', 9: 'a', 7: 'a', 1: 'a', 4: 'a', 8: 'a', 6: 'a', 5: 'a'}
+[0, 1, 2, 3, 4, 3, 0, 2, 9, 7, 1, 4, 8, 6, 5]
+```
+
+可以看到主进程定义了一个字典和一个列表，在子进程中，可以添加和修改字典的内容，在列表中插入新的数据，实现进程间的数据共享，即可以共同修改同一份数据
+
+### 进程池
+
+进程池内部维护一个进程序列，当使用时，则去进程池中获取一个进程，如果进程池序列中没有可供使用的进进程，那么程序就会等待，直到进程池中有可用进程为止。就是固定有几个进程可以使用。
+
+进程池中有两个方法：
+
+apply：同步，一般不使用
+
+apply_async：异步
+
+```python
+from  multiprocessing import Process,Pool
+import os, time, random
+
+def fun1(name):
+    print('Run task %s (%s)...' % (name, os.getpid()))
+    start = time.time()
+    time.sleep(random.random() * 3)
+    end = time.time()
+    print('Task %s runs %0.2f seconds.' % (name, (end - start)))
+
+if __name__=='__main__':
+    pool = Pool(5) #创建一个5个进程的进程池
+
+    for i in range(10):
+        pool.apply_async(func=fun1, args=(i,))
+
+    pool.close()
+    pool.join()
+    print('结束测试')
+```
+
+对`Pool`对象调用`join()`方法会等待所有子进程执行完毕，调用`join()`之前必须先调用`close()`，调用`close()`之后就不能继续添加新的`Process`了。
 
