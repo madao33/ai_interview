@@ -1,0 +1,13 @@
+* cv模型
+  * 目标检测、语义/实例风格、基于视频的动作/事件识别
+* 大模型
+  * ==LLama、GPT、ChatGLM==、CLIP
+  * ==RAG相关项目==
+* AIGC模型
+  * Stable-Diffusion
+  * 多模态生成/GAN等图像生成相关算法研发和优化
+  * TTS语音
+* 训练框架
+  * ==DeepSpeed，Megatron等分布式训练框架==
+  * CUDA加速方式
+  * 大模型的分布式部署工程和加速技术

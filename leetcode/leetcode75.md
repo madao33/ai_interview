@@ -3968,11 +3968,242 @@ class Solution:
 
 **题解**
 
+```python
+class Solution:
+    def calcEquation(self, equations: List[List[str]], values: List[float], queries: List[List[str]]) -> List[float]:
+        def dfs(cur, target, curVal, graph, isVisited):
+            if cur == target:
+                return curVal
+            res = -1.0
+            isVisited.add(cur)
+            for edge in graph[cur]:
+                if edge[0] not in isVisited:
+                    isVisited.add(edge[0])
+                    res = dfs(edge[0], target, curVal * edge[1], graph, isVisited)
+                    if res != -1.0:
+                        break
+            return res
+
+        N = len(equations)
+        graph = {}
+        
+        for i in range(N):
+            a, b = equations[i]
+            if a in graph:
+                graph[a].append([b, values[i]])
+            else:
+                graph[a] = [[b, values[i]]]
+            if b in graph:
+                graph[b].append([a, 1.0/values[i]])
+            else:
+                graph[b] = [[a, 1.0/values[i]]]
+
+        res = []
+        for a, b in queries:
+            if a not in graph or b not in graph:
+                res.append(-1.0)
+                continue
+            isVisited = set()
+            
+            res.append(dfs(a, b, 1.0, graph, isVisited))
+
+        return res
 ```
 
+# 图-广度优先搜索
+
+## [1926. 迷宫中离入口最近的出口](https://leetcode.cn/problems/nearest-exit-from-entrance-in-maze/)
+
+中等
+
+
+
+相关标签
+
+相关企业
+
+
+
+提示
+
+
+
+给你一个 `m x n` 的迷宫矩阵 `maze` （**下标从 0 开始**），矩阵中有空格子（用 `'.'` 表示）和墙（用 `'+'` 表示）。同时给你迷宫的入口 `entrance` ，用 `entrance = [entrancerow, entrancecol]` 表示你一开始所在格子的行和列。
+
+每一步操作，你可以往 **上**，**下**，**左** 或者 **右** 移动一个格子。你不能进入墙所在的格子，你也不能离开迷宫。你的目标是找到离 `entrance` **最近** 的出口。**出口** 的含义是 `maze` **边界** 上的 **空格子**。`entrance` 格子 **不算** 出口。
+
+请你返回从 `entrance` 到最近出口的最短路径的 **步数** ，如果不存在这样的路径，请你返回 `-1` 。
+
+ 
+
+**示例 1：**
+
+![img](assets/nearest1-grid.jpg)
+
+```
+输入：maze = [["+","+",".","+"],[".",".",".","+"],["+","+","+","."]], entrance = [1,2]
+输出：1
+解释：总共有 3 个出口，分别位于 (1,0)，(0,2) 和 (2,3) 。
+一开始，你在入口格子 (1,2) 处。
+- 你可以往左移动 2 步到达 (1,0) 。
+- 你可以往上移动 1 步到达 (0,2) 。
+从入口处没法到达 (2,3) 。
+所以，最近的出口是 (0,2) ，距离为 1 步。
 ```
 
+**示例 2：**
 
+![img](assets/nearesr2-grid.jpg)
+
+```
+输入：maze = [["+","+","+"],[".",".","."],["+","+","+"]], entrance = [1,0]
+输出：2
+解释：迷宫中只有 1 个出口，在 (1,2) 处。
+(1,0) 不算出口，因为它是入口格子。
+初始时，你在入口与格子 (1,0) 处。
+- 你可以往右移动 2 步到达 (1,2) 处。
+所以，最近的出口为 (1,2) ，距离为 2 步。
+```
+
+**示例 3：**
+
+![img](assets/nearest3-grid.jpg)
+
+```
+输入：maze = [[".","+"]], entrance = [0,0]
+输出：-1
+解释：这个迷宫中没有出口。
+```
+
+ 
+
+**提示：**
+
+- `maze.length == m`
+- `maze[i].length == n`
+- `1 <= m, n <= 100`
+- `maze[i][j]` 要么是 `'.'` ，要么是 `'+'` 。
+- `entrance.length == 2`
+- `0 <= entrancerow < m`
+- `0 <= entrancecol < n`
+- `entrance` 一定是空格子。
+
+**题解**
+
+```python
+class Solution:
+    def nearestExit(self, maze: List[List[str]], entrance: List[int]) -> int:
+        m, n = len(maze), len(maze[0])
+        dx = [1, 0, -1, 0]
+        dy = [0, 1, 0, -1]
+        q = deque([(entrance[0], entrance[1], 0)])
+        maze[entrance[0]][entrance[1]] = '+'
+        while q:
+            cx, cy, d = q.popleft()
+            for k in range(4):
+                nx = cx + dx[k]
+                ny = cy + dy[k]
+                if 0 <= nx < m and 0 <= ny < n and maze[nx][ny] == '.':
+                    if nx == 0 or nx == m - 1 or ny == 0 or ny == n - 1:
+                        return d + 1
+                    maze[nx][ny] = '+'
+                    q.append((nx, ny, d + 1))
+        return -1
+```
+
+## [994. 腐烂的橘子](https://leetcode.cn/problems/rotting-oranges/)
+
+中等
+
+
+
+相关标签
+
+相关企业
+
+
+
+在给定的 `m x n` 网格 `grid` 中，每个单元格可以有以下三个值之一：
+
+- 值 `0` 代表空单元格；
+- 值 `1` 代表新鲜橘子；
+- 值 `2` 代表腐烂的橘子。
+
+每分钟，腐烂的橘子 **周围 4 个方向上相邻** 的新鲜橘子都会腐烂。
+
+返回 *直到单元格中没有新鲜橘子为止所必须经过的最小分钟数。如果不可能，返回 `-1`* 。
+
+ 
+
+**示例 1：**
+
+**![img](assets/oranges.png)**
+
+```
+输入：grid = [[2,1,1],[1,1,0],[0,1,1]]
+输出：4
+```
+
+**示例 2：**
+
+```
+输入：grid = [[2,1,1],[0,1,1],[1,0,1]]
+输出：-1
+解释：左下角的橘子（第 2 行， 第 0 列）永远不会腐烂，因为腐烂只会发生在 4 个方向上。
+```
+
+**示例 3：**
+
+```
+输入：grid = [[0,2]]
+输出：0
+解释：因为 0 分钟时已经没有新鲜橘子了，所以答案就是 0 。
+```
+
+ 
+
+**提示：**
+
+- `m == grid.length`
+- `n == grid[i].length`
+- `1 <= m, n <= 10`
+- `grid[i][j]` 仅为 `0`、`1` 或 `2`
+
+**题解**
+
+```python
+class Solution:
+    def orangesRotting(self, grid: List[List[int]]) -> int:
+        m, n = len(grid), len(grid[0])
+        q = deque()
+        dx = [0, 1, -1, 0]
+        dy = [1, 0, 0, -1]
+        cnt = 0
+        for i in range(m):
+            for j in range(n):
+                if grid[i][j] == 1:
+                    cnt += 1
+                elif grid[i][j] == 2:
+                    q.append((i, j))
+        if not cnt:
+            return 0
+        ans = -1
+        while q:
+            length = len(q)
+            for _ in range(length):
+                cx, cy = q.popleft()
+                for i in range(4):
+                    nx = cx + dx[i]
+                    ny = cy + dy[i]
+                    if 0 <= nx < m and 0 <= ny < n and grid[nx][ny] == 1:
+                        grid[nx][ny] = 2
+                        q.append((nx, ny))
+                        cnt -= 1
+            ans += 1
+        if cnt:
+            return -1
+        return ans
+```
 
 
 
