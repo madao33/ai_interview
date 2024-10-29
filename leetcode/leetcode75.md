@@ -4203,6 +4203,392 @@ class Solution:
         if cnt:
             return -1
         return ans
+
+```
+
+# 堆/优先队列
+
+## [215. 数组中的第K个最大元素](https://leetcode.cn/problems/kth-largest-element-in-an-array/)
+
+中等
+
+
+
+相关标签
+
+相关企业
+
+
+
+给定整数数组 `nums` 和整数 `k`，请返回数组中第 `**k**` 个最大的元素。
+
+请注意，你需要找的是数组排序后的第 `k` 个最大的元素，而不是第 `k` 个不同的元素。
+
+你必须设计并实现时间复杂度为 `O(n)` 的算法解决此问题。
+
+ 
+
+**示例 1:**
+
+```
+输入: [3,2,1,5,6,4], k = 2
+输出: 5
+```
+
+**示例 2:**
+
+```
+输入: [3,2,3,1,2,4,5,5,6], k = 4
+输出: 4
+```
+
+ 
+
+**提示：**
+
+- `1 <= k <= nums.length <= 105`
+- `-104 <= nums[i] <= 104`
+
+**题解**
+
+python可以使用heapq库来实现最小堆，如果想要用最大堆，可以将数字取反存入heap中
+
+```python
+import heapq
+# [2,0,4,1]
+ 
+# 1.创建堆
+# 方法一：定义一个空列表，然后使用heapq.heqppush(item)函数把元素加入到堆中
+item = 2
+heap = []
+heapq.heappush(heap,item)
+# 方法二：使用heapq.heapify(list)将列表转换为堆结构
+heap = [2,0,4,1]
+heapq.heapify(heap)
+ 
+# 2.heapq.heappush() 添加新元素 num
+num = 3
+heapq.heappush(heap,num)
+ 
+# 3.heapq.heappop() 删除并返回堆顶元素
+heapq.heappop(heap)
+ 
+# 4.heapq.heappushpop() 比较添加元素num与堆顶元素的大小:如果num>堆顶元素，删除并返回堆顶元素，然后添加新元素num;如果num<堆顶元素，返回num，原堆不变
+# 其实也就等价于 添加新元素num，然后删除并返回堆顶元素
+num = 0
+heapq.heappushpop(heap,num)
+ 
+# 5.heapq.heapreplace() 删除并返回堆顶元素，然后添加新元素num
+num = 5
+heapq.heapreplace(heap,num)
+ 
+# 6. heapq.merge() 合并多个排序后的序列成一个排序后的序列， 返回排序后的值的迭代器。
+heap1 = [1,3,5,7]
+heap2 = [2,4,6,8]
+heap = heapq.merge(heap1,heap2)
+print(list(heap))
+ 
+# 7.heapq.nsmallest() 查询堆中的最小n个元素
+n = 3
+heap = [1,3,5,7,2,4,6,8]
+print(heapq.nsmallest(n,heap)) # [1,2,3]
+ 
+# 8.heapq.nlargest() 查询堆中的最大n个元素
+n = 3
+heap = [1,3,5,7,2,4,6,8]
+print(heapq.nlargest(n,heap)) # [8,7,6]
+```
+
+```python
+# import heapq
+
+class Solution:
+    def findKthLargest(self, nums: List[int], k: int) -> int:
+        heap = [-x for x in nums]
+
+        heapq.heapify(heap)
+
+        for i in range(k-1):
+            heapq.heappop(heap)
+        return -heap[0]
+```
+
+## [2336. 无限集中的最小数字](https://leetcode.cn/problems/smallest-number-in-infinite-set/)
+
+中等
+
+
+
+相关标签
+
+相关企业
+
+
+
+提示
+
+
+
+现有一个包含所有正整数的集合 `[1, 2, 3, 4, 5, ...]` 。
+
+实现 `SmallestInfiniteSet` 类：
+
+- `SmallestInfiniteSet()` 初始化 **SmallestInfiniteSet** 对象以包含 **所有** 正整数。
+- `int popSmallest()` **移除** 并返回该无限集中的最小整数。
+- `void addBack(int num)` 如果正整数 `num` **不** 存在于无限集中，则将一个 `num` **添加** 到该无限集中。
+
+ 
+
+**示例：**
+
+```
+输入
+["SmallestInfiniteSet", "addBack", "popSmallest", "popSmallest", "popSmallest", "addBack", "popSmallest", "popSmallest", "popSmallest"]
+[[], [2], [], [], [], [1], [], [], []]
+输出
+[null, null, 1, 2, 3, null, 1, 4, 5]
+
+解释
+SmallestInfiniteSet smallestInfiniteSet = new SmallestInfiniteSet();
+smallestInfiniteSet.addBack(2);    // 2 已经在集合中，所以不做任何变更。
+smallestInfiniteSet.popSmallest(); // 返回 1 ，因为 1 是最小的整数，并将其从集合中移除。
+smallestInfiniteSet.popSmallest(); // 返回 2 ，并将其从集合中移除。
+smallestInfiniteSet.popSmallest(); // 返回 3 ，并将其从集合中移除。
+smallestInfiniteSet.addBack(1);    // 将 1 添加到该集合中。
+smallestInfiniteSet.popSmallest(); // 返回 1 ，因为 1 在上一步中被添加到集合中，
+                                   // 且 1 是最小的整数，并将其从集合中移除。
+smallestInfiniteSet.popSmallest(); // 返回 4 ，并将其从集合中移除。
+smallestInfiniteSet.popSmallest(); // 返回 5 ，并将其从集合中移除。
+```
+
+ 
+
+**提示：**
+
+- `1 <= num <= 1000`
+- 最多调用 `popSmallest` 和 `addBack` 方法 **共计** `1000` 次
+
+**题解**
+
+```python
+from sortedcontainers import SortedSet
+
+class SmallestInfiniteSet:
+
+    def __init__(self):
+        self.set = SortedSet(range(1, 1001))
+
+
+    def popSmallest(self) -> int:
+        temp = self.set[0]
+        self.set.remove(temp)
+        return temp
+
+    def addBack(self, num: int) -> None:
+        self.set.add(num)
+
+        
+
+
+# Your SmallestInfiniteSet object will be instantiated and called as such:
+# obj = SmallestInfiniteSet()
+# param_1 = obj.popSmallest()
+# obj.addBack(num)
+```
+
+## [2542. 最大子序列的分数](https://leetcode.cn/problems/maximum-subsequence-score/)
+
+中等
+
+
+
+相关标签
+
+相关企业
+
+
+
+提示
+
+
+
+给你两个下标从 **0** 开始的整数数组 `nums1` 和 `nums2` ，两者长度都是 `n` ，再给你一个正整数 `k` 。你必须从 `nums1` 中选一个长度为 `k` 的 **子序列** 对应的下标。
+
+对于选择的下标 `i0` ，`i1` ，...， `ik - 1` ，你的 **分数** 定义如下：
+
+- `nums1` 中下标对应元素求和，乘以 `nums2` 中下标对应元素的 **最小值** 。
+- 用公式表示： `(nums1[i0] + nums1[i1] +...+ nums1[ik - 1]) * min(nums2[i0] , nums2[i1], ... ,nums2[ik - 1])` 。
+
+请你返回 **最大** 可能的分数。
+
+一个数组的 **子序列** 下标是集合 `{0, 1, ..., n-1}` 中删除若干元素得到的剩余集合，也可以不删除任何元素。
+
+ 
+
+**示例 1：**
+
+```
+输入：nums1 = [1,3,3,2], nums2 = [2,1,3,4], k = 3
+输出：12
+解释：
+四个可能的子序列分数为：
+- 选择下标 0 ，1 和 2 ，得到分数 (1+3+3) * min(2,1,3) = 7 。
+- 选择下标 0 ，1 和 3 ，得到分数 (1+3+2) * min(2,1,4) = 6 。
+- 选择下标 0 ，2 和 3 ，得到分数 (1+3+2) * min(2,3,4) = 12 。
+- 选择下标 1 ，2 和 3 ，得到分数 (3+3+2) * min(1,3,4) = 8 。
+所以最大分数为 12 。
+```
+
+**示例 2：**
+
+```
+输入：nums1 = [4,2,3,1,1], nums2 = [7,5,10,9,6], k = 1
+输出：30
+解释：
+选择下标 2 最优：nums1[2] * nums2[2] = 3 * 10 = 30 是最大可能分数。
+```
+
+ 
+
+**提示：**
+
+- `n == nums1.length == nums2.length`
+- `1 <= n <= 105`
+- `0 <= nums1[i], nums2[j] <= 105`
+- `1 <= k <= n`
+
+**题解**
+
+```python
+class Solution:
+    def maxScore(self, nums1: List[int], nums2: List[int], k: int) -> int:
+        a = sorted(zip(nums1, nums2), key = lambda p : -p[1])
+        h = [x for x, _ in a[:k]]
+        heapq.heapify(h)
+        s = sum(h)
+        ans = s * a[k-1][1]
+        for x, y in a[k:]:
+            if x > h[0]:
+                s += x - heapq.heapreplace(h, x)
+                ans = max(ans, s*y)
+        return ans
+```
+
+## [2462. 雇佣 K 位工人的总代价](https://leetcode.cn/problems/total-cost-to-hire-k-workers/)
+
+中等
+
+
+
+相关标签
+
+相关企业
+
+
+
+提示
+
+
+
+给你一个下标从 **0** 开始的整数数组 `costs` ，其中 `costs[i]` 是雇佣第 `i` 位工人的代价。
+
+同时给你两个整数 `k` 和 `candidates` 。我们想根据以下规则恰好雇佣 `k` 位工人：
+
+- 总共进行 `k` 轮雇佣，且每一轮恰好雇佣一位工人。
+
+- 在每一轮雇佣中，从最前面
+
+   
+
+  ```
+  candidates
+  ```
+
+   和最后面
+
+   
+
+  ```
+  candidates
+  ```
+
+   人中选出代价最小的一位工人，如果有多位代价相同且最小的工人，选择下标更小的一位工人。
+
+  - 比方说，`costs = [3,2,7,7,1,2]` 且 `candidates = 2` ，第一轮雇佣中，我们选择第 `4` 位工人，因为他的代价最小 `[*3,2*,7,7,***1**,2*]` 。
+  - 第二轮雇佣，我们选择第 `1` 位工人，因为他们的代价与第 `4` 位工人一样都是最小代价，而且下标更小，`[*3,**2***,7,*7,2*]` 。注意每一轮雇佣后，剩余工人的下标可能会发生变化。
+
+- 如果剩余员工数目不足 `candidates` 人，那么下一轮雇佣他们中代价最小的一人，如果有多位代价相同且最小的工人，选择下标更小的一位工人。
+
+- 一位工人只能被选择一次。
+
+返回雇佣恰好 `k` 位工人的总代价。
+
+ 
+
+**示例 1：**
+
+```
+输入：costs = [17,12,10,2,7,2,11,20,8], k = 3, candidates = 4
+输出：11
+解释：我们总共雇佣 3 位工人。总代价一开始为 0 。
+- 第一轮雇佣，我们从 [17,12,10,2,7,2,11,20,8] 中选择。最小代价是 2 ，有两位工人，我们选择下标更小的一位工人，即第 3 位工人。总代价是 0 + 2 = 2 。
+- 第二轮雇佣，我们从 [17,12,10,7,2,11,20,8] 中选择。最小代价是 2 ，下标为 4 ，总代价是 2 + 2 = 4 。
+- 第三轮雇佣，我们从 [17,12,10,7,11,20,8] 中选择，最小代价是 7 ，下标为 3 ，总代价是 4 + 7 = 11 。注意下标为 3 的工人同时在最前面和最后面 4 位工人中。
+总雇佣代价是 11 。
+```
+
+**示例 2：**
+
+```
+输入：costs = [1,2,4,1], k = 3, candidates = 3
+输出：4
+解释：我们总共雇佣 3 位工人。总代价一开始为 0 。
+- 第一轮雇佣，我们从 [1,2,4,1] 中选择。最小代价为 1 ，有两位工人，我们选择下标更小的一位工人，即第 0 位工人，总代价是 0 + 1 = 1 。注意，下标为 1 和 2 的工人同时在最前面和最后面 3 位工人中。
+- 第二轮雇佣，我们从 [2,4,1] 中选择。最小代价为 1 ，下标为 2 ，总代价是 1 + 1 = 2 。
+- 第三轮雇佣，少于 3 位工人，我们从剩余工人 [2,4] 中选择。最小代价是 2 ，下标为 0 。总代价为 2 + 2 = 4 。
+总雇佣代价是 4 。
+```
+
+ 
+
+**提示：**
+
+- `1 <= costs.length <= 105 `
+- `1 <= costs[i] <= 105`
+- `1 <= k, candidates <= costs.length`
+
+
+
+**题解**
+
+```python
+class Solution:
+    def totalCost(self, costs: List[int], k: int, candidates: int) -> int:
+        n = len(costs)
+        q = list()
+        left, right = candidates - 1, n - candidates
+        if left + 1 < right:
+            for i in range(left + 1):
+                heappush(q, (costs[i], i))
+            for i in range(right, n):
+                heappush(q, (costs[i], i))
+        else:
+            for i in range(n):
+                heappush(q, (costs[i], i))
+        
+        ans = 0
+        for _ in range(k):
+            cost, idx = heappop(q)
+            ans += cost
+            if left + 1 < right:
+                if idx <= left:
+                    left += 1
+                    heappush(q, (costs[left], left))
+                else:
+                    right -= 1
+                    heappush(q, (costs[right], right))
+        return ans
+
 ```
 
 
