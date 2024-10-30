@@ -4591,6 +4591,326 @@ class Solution:
 
 ```
 
+# 二分查找
+
+## [374. 猜数字大小](https://leetcode.cn/problems/guess-number-higher-or-lower/)
+
+简单
+
+
+
+相关标签
+
+相关企业
+
+
+
+我们正在玩猜数字游戏。猜数字游戏的规则如下：
+
+我会从 `1` 到 `n` 随机选择一个数字。 请你猜选出的是哪个数字。
+
+如果你猜错了，我会告诉你，我选出的数字比你猜测的数字大了还是小了。
+
+你可以通过调用一个预先定义好的接口 `int guess(int num)` 来获取猜测结果，返回值一共有三种可能的情况：
+
+- `-1`：你猜的数字比我选出的数字大 （即 `num > pick`）。
+- `1`：你猜的数字比我选出的数字小 （即 `num < pick`）。
+- `0`：你猜的数字与我选出的数字相等。（即 `num == pick`）。
+
+返回我选出的数字。
+
+ 
+
+**示例 1：**
+
+```
+输入：n = 10, pick = 6
+输出：6
+```
+
+**示例 2：**
+
+```
+输入：n = 1, pick = 1
+输出：1
+```
+
+**示例 3：**
+
+```
+输入：n = 2, pick = 1
+输出：1
+```
+
+ 
+
+**提示：**
+
+- `1 <= n <= 231 - 1`
+- `1 <= pick <= n`
+
+**题解**
+
+```python
+# The guess API is already defined for you.
+# @param num, your guess
+# @return -1 if num is higher than the picked number
+#          1 if num is lower than the picked number
+#          otherwise return 0
+# def guess(num: int) -> int:
+
+class Solution:
+    def guessNumber(self, n: int) -> int:
+        left, right = 1, n
+        while left < right:
+            mid = (left + right) // 2
+            if guess(mid) <= 0:
+                right = mid
+            elif guess(mid) > 0:
+                left = mid + 1
+        return left
+
+```
+
+## [2300. 咒语和药水的成功对数](https://leetcode.cn/problems/successful-pairs-of-spells-and-potions/)==二分查找区间==
+
+中等
+
+
+
+相关标签
+
+相关企业
+
+
+
+提示
+
+
+
+给你两个正整数数组 `spells` 和 `potions` ，长度分别为 `n` 和 `m` ，其中 `spells[i]` 表示第 `i` 个咒语的能量强度，`potions[j]` 表示第 `j` 瓶药水的能量强度。
+
+同时给你一个整数 `success` 。一个咒语和药水的能量强度 **相乘** 如果 **大于等于** `success` ，那么它们视为一对 **成功** 的组合。
+
+请你返回一个长度为 `n` 的整数数组 `pairs`，其中 `pairs[i]` 是能跟第 `i` 个咒语成功组合的 **药水** 数目。
+
+ 
+
+**示例 1：**
+
+```
+输入：spells = [5,1,3], potions = [1,2,3,4,5], success = 7
+输出：[4,0,3]
+解释：
+- 第 0 个咒语：5 * [1,2,3,4,5] = [5,10,15,20,25] 。总共 4 个成功组合。
+- 第 1 个咒语：1 * [1,2,3,4,5] = [1,2,3,4,5] 。总共 0 个成功组合。
+- 第 2 个咒语：3 * [1,2,3,4,5] = [3,6,9,12,15] 。总共 3 个成功组合。
+所以返回 [4,0,3] 。
+```
+
+**示例 2：**
+
+```
+输入：spells = [3,1,2], potions = [8,5,8], success = 16
+输出：[2,0,2]
+解释：
+- 第 0 个咒语：3 * [8,5,8] = [24,15,24] 。总共 2 个成功组合。
+- 第 1 个咒语：1 * [8,5,8] = [8,5,8] 。总共 0 个成功组合。
+- 第 2 个咒语：2 * [8,5,8] = [16,10,16] 。总共 2 个成功组合。
+所以返回 [2,0,2] 。
+```
+
+ 
+
+**提示：**
+
+- `n == spells.length`
+- `m == potions.length`
+- `1 <= n, m <= 105`
+- `1 <= spells[i], potions[i] <= 105`
+- `1 <= success <= 1010`
+
+**题解**
+
+```python
+from typing import List
+
+
+class Solution:
+
+    def binarySearch(self, potions: List[int], target: int) -> int:
+        left, right = -1, len(potions)
+        while left + 1 < right:
+            mid = (left + right) // 2
+            if potions[mid] <= target:
+                left = mid
+            else:
+                right = mid
+        return right
+
+    def successfulPairs(self, spells: List[int], potions: List[int], success: int) -> List[int]:
+        potions.sort()
+        res = []
+        for spell in spells:
+            target = (success - 1) / spell
+            temp = self.binarySearch(potions, target)
+            res.append(len(potions) - temp)
+        return res 
+
+
+print(Solution().successfulPairs([5,1,3], [1,2,3,4,5], 7))
+```
+
+## [162. 寻找峰值](https://leetcode.cn/problems/find-peak-element/)
+
+中等
+
+
+
+相关标签
+
+相关企业
+
+
+
+峰值元素是指其值严格大于左右相邻值的元素。
+
+给你一个整数数组 `nums`，找到峰值元素并返回其索引。数组可能包含多个峰值，在这种情况下，返回 **任何一个峰值** 所在位置即可。
+
+你可以假设 `nums[-1] = nums[n] = -∞` 。
+
+你必须实现时间复杂度为 `O(log n)` 的算法来解决此问题。
+
+ 
+
+**示例 1：**
+
+```
+输入：nums = [1,2,3,1]
+输出：2
+解释：3 是峰值元素，你的函数应该返回其索引 2。
+```
+
+**示例 2：**
+
+```
+输入：nums = [1,2,1,3,5,6,4]
+输出：1 或 5 
+解释：你的函数可以返回索引 1，其峰值元素为 2；
+     或者返回索引 5， 其峰值元素为 6。
+```
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 1000`
+- `-231 <= nums[i] <= 231 - 1`
+- 对于所有有效的 `i` 都有 `nums[i] != nums[i + 1]`
+
+**题解**
+
+```python
+class Solution:
+    def findPeakElement(self, nums: List[int]) -> int:
+        n = len(nums)
+
+        def get(i: int) -> int:
+            if i < 0 or i > n - 1:
+                return float('-inf')
+            return nums[i]
+        
+        left, right, ans = 0, n-1, -1
+        while left <= right:
+            mid = (left + right) // 2
+            if get(mid - 1) < get(mid) > get(mid + 1):
+                ans = mid
+                break
+            elif get(mid - 1) < get(mid):
+                left = mid + 1
+            else:
+                right = mid - 1
+            
+        return ans
+
+```
+
+## [875. 爱吃香蕉的珂珂](https://leetcode.cn/problems/koko-eating-bananas/)
+
+中等
+
+
+
+相关标签
+
+相关企业
+
+
+
+珂珂喜欢吃香蕉。这里有 `n` 堆香蕉，第 `i` 堆中有 `piles[i]` 根香蕉。警卫已经离开了，将在 `h` 小时后回来。
+
+珂珂可以决定她吃香蕉的速度 `k` （单位：根/小时）。每个小时，她将会选择一堆香蕉，从中吃掉 `k` 根。如果这堆香蕉少于 `k` 根，她将吃掉这堆的所有香蕉，然后这一小时内不会再吃更多的香蕉。 
+
+珂珂喜欢慢慢吃，但仍然想在警卫回来前吃掉所有的香蕉。
+
+返回她可以在 `h` 小时内吃掉所有香蕉的最小速度 `k`（`k` 为整数）。
+
+ 
+
+**示例 1：**
+
+```
+输入：piles = [3,6,7,11], h = 8
+输出：4
+```
+
+**示例 2：**
+
+```
+输入：piles = [30,11,23,4,20], h = 5
+输出：30
+```
+
+**示例 3：**
+
+```
+输入：piles = [30,11,23,4,20], h = 6
+输出：23
+```
+
+ 
+
+**提示：**
+
+- `1 <= piles.length <= 104`
+- `piles.length <= h <= 109`
+- `1 <= piles[i] <= 109`
+
+**题解**
+
+```python
+class Solution:
+    
+    def minEatingSpeed(self, piles: List[int], h: int) -> int:
+        left, right = 1, max(piles)
+
+        def calcTime(piles, speed):
+            sum = 0
+            for pile in piles:
+                sum += (pile + speed - 1) // speed
+            return sum
+        
+        while left < right:
+            mid = (left + right) // 2
+            if calcTime(piles, mid) <= h:
+                right = mid
+            else:
+                left = mid + 1
+        return right
+
+
+```
+
 
 
 # 动态规划
