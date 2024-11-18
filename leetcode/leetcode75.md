@@ -5073,7 +5073,349 @@ print(Solution().combinationSum3(3, 7))
 
 
 
-# 动态规划
+# 动态规划-一维
+
+## [1137. 第 N 个泰波那契数](https://leetcode.cn/problems/n-th-tribonacci-number/)
+
+简单
+
+
+
+相关标签
+
+相关企业
+
+
+
+提示
+
+
+
+泰波那契序列 Tn 定义如下： 
+
+T0 = 0, T1 = 1, T2 = 1, 且在 n >= 0 的条件下 Tn+3 = Tn + Tn+1 + Tn+2
+
+给你整数 `n`，请返回第 n 个泰波那契数 Tn 的值。
+
+ 
+
+**示例 1：**
+
+```
+输入：n = 4
+输出：4
+解释：
+T_3 = 0 + 1 + 1 = 2
+T_4 = 1 + 1 + 2 = 4
+```
+
+**示例 2：**
+
+```
+输入：n = 25
+输出：1389537
+```
+
+ 
+
+**提示：**
+
+- `0 <= n <= 37`
+- 答案保证是一个 32 位整数，即 `answer <= 2^31 - 1`。
+
+**题解**
+
+```python
+class Solution:
+    def tribonacci(self, n: int) -> int:
+        t0, t1, t2 = 0, 1, 1
+        if n <= 2:
+            return 0 if n == 0 else 1
+        tn = 0
+        for i in range(3, n+1):
+            tn = t0 + t1 + t2
+            t0, t1, t2 = t1, t2, tn
+        return tn
+```
+
+## [746. 使用最小花费爬楼梯](https://leetcode.cn/problems/min-cost-climbing-stairs/)
+
+简单
+
+
+
+相关标签
+
+相关企业
+
+
+
+提示
+
+
+
+给你一个整数数组 `cost` ，其中 `cost[i]` 是从楼梯第 `i` 个台阶向上爬需要支付的费用。一旦你支付此费用，即可选择向上爬一个或者两个台阶。
+
+你可以选择从下标为 `0` 或下标为 `1` 的台阶开始爬楼梯。
+
+请你计算并返回达到楼梯顶部的最低花费。
+
+ 
+
+**示例 1：**
+
+```
+输入：cost = [10,15,20]
+输出：15
+解释：你将从下标为 1 的台阶开始。
+- 支付 15 ，向上爬两个台阶，到达楼梯顶部。
+总花费为 15 。
+```
+
+**示例 2：**
+
+```
+输入：cost = [1,100,1,1,1,100,1,1,100,1]
+输出：6
+解释：你将从下标为 0 的台阶开始。
+- 支付 1 ，向上爬两个台阶，到达下标为 2 的台阶。
+- 支付 1 ，向上爬两个台阶，到达下标为 4 的台阶。
+- 支付 1 ，向上爬两个台阶，到达下标为 6 的台阶。
+- 支付 1 ，向上爬一个台阶，到达下标为 7 的台阶。
+- 支付 1 ，向上爬两个台阶，到达下标为 9 的台阶。
+- 支付 1 ，向上爬一个台阶，到达楼梯顶部。
+总花费为 6 。
+```
+
+ 
+
+**提示：**
+
+- `2 <= cost.length <= 1000`
+- `0 <= cost[i] <= 999`
+
+**题解**
+
+```python
+class Solution:
+    def minCostClimbingStairs(self, cost: List[int]) -> int:
+        if len(cost) <= 2:
+            return min(cost)
+        pre1, pre2 = 0, 0
+        cur = 0
+        for i in range(2, len(cost) + 1):
+            cur = min(pre1 + cost[i-2], pre2 + cost[i-1])
+            pre1, pre2 = pre2, cur
+        return cur
+```
+
+## [198. 打家劫舍](https://leetcode.cn/problems/house-robber/)
+
+中等
+
+
+
+相关标签
+
+相关企业
+
+
+
+你是一个专业的小偷，计划偷窃沿街的房屋。每间房内都藏有一定的现金，影响你偷窃的唯一制约因素就是相邻的房屋装有相互连通的防盗系统，**如果两间相邻的房屋在同一晚上被小偷闯入，系统会自动报警**。
+
+给定一个代表每个房屋存放金额的非负整数数组，计算你 **不触动警报装置的情况下** ，一夜之内能够偷窃到的最高金额。
+
+ 
+
+**示例 1：**
+
+```
+输入：[1,2,3,1]
+输出：4
+解释：偷窃 1 号房屋 (金额 = 1) ，然后偷窃 3 号房屋 (金额 = 3)。
+     偷窃到的最高金额 = 1 + 3 = 4 。
+```
+
+**示例 2：**
+
+```
+输入：[2,7,9,3,1]
+输出：12
+解释：偷窃 1 号房屋 (金额 = 2), 偷窃 3 号房屋 (金额 = 9)，接着偷窃 5 号房屋 (金额 = 1)。
+     偷窃到的最高金额 = 2 + 9 + 1 = 12 。
+```
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 100`
+- `0 <= nums[i] <= 400`
+
+**题解**
+
+```python
+class Solution:
+    def rob(self, nums: List[int]) -> int:
+        n = len(nums)
+        if n <= 2:
+            return max(nums)
+        pre1, prev2 = nums[0], max(nums[1], nums[0])
+        ans, cur = 0, 0
+        for i in range(2, n):
+            cur = max(pre1 + nums[i], prev2)
+            ans = max(ans, cur)
+            pre1, prev2 = prev2, cur
+        return ans
+```
+
+## [790. 多米诺和托米诺平铺](https://leetcode.cn/problems/domino-and-tromino-tiling/)==无法理解题意==
+
+中等
+
+
+
+相关标签
+
+相关企业
+
+
+
+有两种形状的瓷砖：一种是 `2 x 1` 的多米诺形，另一种是形如 "L" 的托米诺形。两种形状都可以旋转。
+
+![img](assets/lc-domino.jpg)
+
+给定整数 n ，返回可以平铺 `2 x n` 的面板的方法的数量。**返回对** `109 + 7` **取模** 的值。
+
+平铺指的是每个正方形都必须有瓷砖覆盖。两个平铺不同，当且仅当面板上有四个方向上的相邻单元中的两个，使得恰好有一个平铺有一个瓷砖占据两个正方形。
+
+ 
+
+**示例 1:**
+
+![img](assets/lc-domino1.jpg)
+
+```
+输入: n = 3
+输出: 5
+解释: 五种不同的方法如上所示。
+```
+
+**示例 2:**
+
+```
+输入: n = 1
+输出: 1
+```
+
+ 
+
+**提示：**
+
+- `1 <= n <= 1000`
+
+**题解**
+
+```python
+class Solution:
+    def numTilings(self, n: int) -> int:
+        MOD = 10 ** 9 + 7
+        dp = [[0] * 4 for _ in range(n + 1)]
+        dp[0][3] = 1
+        for i in range(1, n + 1):
+            dp[i][0] = dp[i - 1][3]
+            dp[i][1] = (dp[i - 1][0] + dp[i - 1][2]) % MOD
+            dp[i][2] = (dp[i - 1][0] + dp[i - 1][1]) % MOD
+            dp[i][3] = (((dp[i - 1][0] + dp[i - 1][1]) % MOD + dp[i - 1][2]) % MOD + dp[i - 1][3]) % MOD
+        return dp[n][3]
+```
+
+
+
+# 动态规划-多维
+
+## [62. 不同路径](https://leetcode.cn/problems/unique-paths/)
+
+中等
+
+
+
+相关标签
+
+相关企业
+
+
+
+一个机器人位于一个 `m x n` 网格的左上角 （起始点在下图中标记为 “Start” ）。
+
+机器人每次只能向下或者向右移动一步。机器人试图达到网格的右下角（在下图中标记为 “Finish” ）。
+
+问总共有多少条不同的路径？
+
+ 
+
+**示例 1：**
+
+![img](assets/1697422740-adxmsI-image.png)
+
+```
+输入：m = 3, n = 7
+输出：28
+```
+
+**示例 2：**
+
+```
+输入：m = 3, n = 2
+输出：3
+解释：
+从左上角开始，总共有 3 条路径可以到达右下角。
+1. 向右 -> 向下 -> 向下
+2. 向下 -> 向下 -> 向右
+3. 向下 -> 向右 -> 向下
+```
+
+**示例 3：**
+
+```
+输入：m = 7, n = 3
+输出：28
+```
+
+**示例 4：**
+
+```
+输入：m = 3, n = 3
+输出：6
+```
+
+ 
+
+**提示：**
+
+- `1 <= m, n <= 100`
+- 题目数据保证答案小于等于 `2 * 109`
+
+**题解**
+
+```python
+class Solution:
+    def uniquePaths(self, m: int, n: int) -> int:
+        dp = [[0 for i in range(n)] for i in range(m)]
+        dp[0][0] = 1
+        for i in range(m):
+            for j in range(n):
+                if i > 0:
+                    dp[i][j] += dp[i-1][j]
+                if j > 0:
+                    dp[i][j] += dp[i][j-1]
+        return dp[m-1][n-1]
+    
+
+print(Solution().uniquePaths(3, 7))
+```
+
+
 
 ## [1143. 最长公共子序列](https://leetcode.cn/problems/longest-common-subsequence/)
 
@@ -5148,5 +5490,156 @@ class Solution:
                 else:
                     dp[i][j] = max(dp[i-1][j], dp[i][j-1])
         return dp[m][n]
+```
+
+## [714. 买卖股票的最佳时机含手续费](https://leetcode.cn/problems/best-time-to-buy-and-sell-stock-with-transaction-fee/)
+
+中等
+
+
+
+相关标签
+
+相关企业
+
+
+
+提示
+
+
+
+给定一个整数数组 `prices`，其中 `prices[i]`表示第 `i` 天的股票价格 ；整数 `fee` 代表了交易股票的手续费用。
+
+你可以无限次地完成交易，但是你每笔交易都需要付手续费。如果你已经购买了一个股票，在卖出它之前你就不能再继续购买股票了。
+
+返回获得利润的最大值。
+
+**注意：**这里的一笔交易指买入持有并卖出股票的整个过程，每笔交易你只需要为支付一次手续费。
+
+ 
+
+**示例 1：**
+
+```
+输入：prices = [1, 3, 2, 8, 4, 9], fee = 2
+输出：8
+解释：能够达到的最大利润:  
+在此处买入 prices[0] = 1
+在此处卖出 prices[3] = 8
+在此处买入 prices[4] = 4
+在此处卖出 prices[5] = 9
+总利润: ((8 - 1) - 2) + ((9 - 4) - 2) = 8
+```
+
+**示例 2：**
+
+```
+输入：prices = [1,3,7,5,10,3], fee = 3
+输出：6
+```
+
+ 
+
+**提示：**
+
+- `1 <= prices.length <= 5 * 104`
+- `1 <= prices[i] < 5 * 104`
+- `0 <= fee < 5 * 104`
+
+```python
+class Solution:
+    def maxProfit(self, prices: List[int], fee: int) -> int:
+        n = len(prices)
+        prev0, prev1 = 0, -prices[0]
+        for i in range(1, n):
+            curr0 = max(prev0, prev1 + prices[i] - fee)
+            curr1 = max(prev0 - prices[i], prev1)
+            prev0, prev1 = curr0, curr1
+        return prev0
+```
+
+## [72. 编辑距离](https://leetcode.cn/problems/edit-distance/)
+
+中等
+
+
+
+相关标签
+
+相关企业
+
+
+
+给你两个单词 `word1` 和 `word2`， *请返回将 `word1` 转换成 `word2` 所使用的最少操作数* 。
+
+你可以对一个单词进行如下三种操作：
+
+- 插入一个字符
+- 删除一个字符
+- 替换一个字符
+
+ 
+
+**示例 1：**
+
+```
+输入：word1 = "horse", word2 = "ros"
+输出：3
+解释：
+horse -> rorse (将 'h' 替换为 'r')
+rorse -> rose (删除 'r')
+rose -> ros (删除 'e')
+```
+
+**示例 2：**
+
+```
+输入：word1 = "intention", word2 = "execution"
+输出：5
+解释：
+intention -> inention (删除 't')
+inention -> enention (将 'i' 替换为 'e')
+enention -> exention (将 'n' 替换为 'x')
+exention -> exection (将 'n' 替换为 'c')
+exection -> execution (插入 'u')
+```
+
+ 
+
+**提示：**
+
+- `0 <= word1.length, word2.length <= 500`
+- `word1` 和 `word2` 由小写英文字母组成
+
+```python
+class Solution:
+    def minDistance(self, word1: str, word2: str) -> int:
+        n = len(word1)
+        m = len(word2)
+        
+        # 有一个字符串为空串
+        if n * m == 0:
+            return n + m
+        
+        # DP 数组
+        D = [ [0] * (m + 1) for _ in range(n + 1)]
+        
+        # 边界状态初始化
+        for i in range(n + 1):
+            D[i][0] = i
+        for j in range(m + 1):
+            D[0][j] = j
+        
+        # 计算所有 DP 值
+        for i in range(1, n + 1):
+            for j in range(1, m + 1):
+                left = D[i - 1][j] + 1
+                down = D[i][j - 1] + 1
+                left_down = D[i - 1][j - 1] 
+                if word1[i - 1] != word2[j - 1]:
+                    left_down += 1
+                D[i][j] = min(left, down, left_down)
+        
+        return D[n][m]
 ```
 
